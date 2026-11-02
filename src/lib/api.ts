@@ -199,3 +199,11 @@ export function cancelBooking(id: string, token: string) {
     token,
   });
 }
+
+/** Confirms a pending booking — locks the slot in (simulates payment). */
+export function confirmBooking(id: string, token: string) {
+  return request<Booking>(`/api/bookings/${id}/confirm`, {
+    method: "POST",
+    token,
+  });
+}

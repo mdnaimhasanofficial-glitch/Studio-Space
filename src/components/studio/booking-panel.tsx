@@ -138,14 +138,16 @@ export function BookingPanel({ studio }: { studio: BookingPanelStudio }) {
 
         {confirmation ? (
           <Alert>
-            <AlertTitle>Booking confirmed</AlertTitle>
+            <AlertTitle>Reservation requested</AlertTitle>
             <AlertDescription className="space-y-3">
               <p>
-                {studio.name} is booked for{" "}
+                {studio.name} is requested for{" "}
                 <span className="font-medium text-foreground">
                   {confirmation.date}
                 </span>{" "}
-                — total <span className="font-medium text-foreground">${confirmation.total}</span>.
+                — total <span className="font-medium text-foreground">${confirmation.total}</span>. The
+                booking starts as <span className="font-medium">pending</span>;
+                confirm it from My Bookings to lock the slot in.
               </p>
               <Link
                 href="/account/bookings"

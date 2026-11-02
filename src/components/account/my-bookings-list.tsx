@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
-import { CalendarDays, Clock } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock } from "lucide-react";
 
 import { useAuth } from "@/components/auth/auth-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -27,11 +27,20 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   ApiError,
   cancelBooking,
+  confirmBooking,
   getMyBookings,
   type Booking,
 } from "@/lib/api";
 import { setToken } from "@/lib/auth-store";
 import { cn } from "cn";
+
+/** Status badge tone per booking state. */
+const statusTone: Record<string, string> = {
+  pending: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  confirmed: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  cancelled: "",
+  completed: "border-indigo-500/40 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+};
 
 export function MyBookingsList() {
   const { token } = useAuth();
@@ -39,6 +48,7 @@ export function MyBookingsList() {
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   // Booking whose cancel dialog is open (AlertDialogAction is a plain button,
   // so the dialog is closed explicitly once the choice is made).
   const [cancelId, setCancelId] = useState<string | null>(null);
@@ -68,6 +78,39 @@ export function MyBookingsList() {
       cancelled = true;
     };
   }, [token]);
+
+  async function handleConfirm(booking: Booking) {
+    if (!token) return;
+    setError(null);
+    setConfirmingId(booking.id);
+    try {
+      const updated = await confirmBooking(booking.id, token);
+      setBookings(
+        (current) =>
+          current?.map((item) => (item.id === updated.id ? updated : item)) ??
+          null,
+      );
+      toast.success("Booking confirmed", {
+        description: `${booking.studioName} on ${format(
+          parseISO(booking.date),
+          "EEE, MMM d, yyyy",
+        )} is locked in.`,
+      });
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        setToken(null);
+        return;
+      }
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "Could not confirm the booking. Please try again.";
+      toast.error(message, { description: "Confirmation failed." });
+      setError(message);
+    } finally {
+      setConfirmingId(null);
+    }
+  }
 
   async function handleCancel(booking: Booking) {
     if (!token) return;
@@ -174,14 +217,14 @@ export function MyBookingsList() {
                             </span>
                           </p>
                         </div>
-                        {cancelled ? (
+                        {booking.status === "cancelled" ? (
                           <Badge variant="destructive" className="capitalize">
                             {booking.status}
                           </Badge>
                         ) : (
                           <Badge
-                            variant="secondary"
-                            className="capitalize text-primary"
+                            variant="outline"
+                            className={cn("capitalize", statusTone[booking.status])}
                           >
                             {booking.status}
                           </Badge>
@@ -201,6 +244,25 @@ export function MyBookingsList() {
                               total
                             </span>
                           </p>
+                          {booking.status === "pending" && (
+                            <button
+                              type="button"
+                              onClick={() => handleConfirm(booking)}
+                              disabled={confirmingId === booking.id}
+                              className="flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80 disabled:opacity-50"
+                              aria-label={`Confirm booking for ${booking.studioName}`}
+                            >
+                              {confirmingId === booking.id ? (
+                                <Spinner className="size-3.5" aria-hidden />
+                              ) : (
+                                <CheckCircle2
+                                  className="size-3.5 shrink-0"
+                                  aria-hidden
+                                />
+                              )}
+                              Confirm booking
+                            </button>
+                          )}
                           {!cancelled && (
                             <AlertDialog
                               open={cancelId === booking.id}
