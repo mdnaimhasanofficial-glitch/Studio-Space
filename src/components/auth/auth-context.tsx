@@ -18,7 +18,12 @@ interface AuthValue {
   user: AuthUser | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    photoUrl?: string,
+  ) => Promise<void>;
   loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => void;
 }
@@ -36,8 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const session = await loginUser(email, password);
       setToken(session.token);
     },
-    async register(name, email, password) {
-      const session = await registerUser(name, email, password);
+    async register(name, email, password, photoUrl) {
+      const session = await registerUser(name, email, password, photoUrl);
       setToken(session.token);
     },
     async loginWithGoogle(credential) {

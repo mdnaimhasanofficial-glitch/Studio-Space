@@ -57,6 +57,8 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  /** Present when the backend includes the avatar URL in the JWT claims. */
+  photo?: string;
 }
 
 /** Reads the unverified JWT payload — the server is the authority. */
@@ -72,10 +74,26 @@ export function decodeToken(token: string): AuthUser | null {
     const claims: unknown = JSON.parse(new TextDecoder().decode(bytes));
 
     if (typeof claims !== "object" || claims === null) return null;
-    const { sub, name, email } = claims as Record<string, unknown>;
+    const { sub, name, email, photo, picture } = claims as Record<
+      string,
+      unknown
+    >;
     if (typeof sub !== "string" || typeof email !== "string") return null;
 
-    return { id: sub, name: typeof name === "string" ? name : "", email };
+    // Some tokens carry the avatar as `photo`, Google's as `picture`.
+    const photoUrl =
+      typeof photo === "string"
+        ? photo
+        : typeof picture === "string"
+          ? picture
+          : undefined;
+
+    return {
+      id: sub,
+      name: typeof name === "string" ? name : "",
+      email,
+      ...(photoUrl ? { photo: photoUrl } : {}),
+    };
   } catch {
     return null;
   }

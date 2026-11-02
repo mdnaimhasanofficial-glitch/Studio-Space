@@ -70,10 +70,15 @@ export function loginUser(email: string, password: string) {
   });
 }
 
-export function registerUser(name: string, email: string, password: string) {
+export function registerUser(
+  name: string,
+  email: string,
+  password: string,
+  photoUrl?: string,
+) {
   return request<AuthSession>("/api/auth/register", {
     method: "POST",
-    body: { name, email, password },
+    body: { name, email, password, photoUrl },
   });
 }
 

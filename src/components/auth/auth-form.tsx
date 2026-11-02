@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { CheckCircle2, Circle } from "lucide-react";
 
 import { useAuth } from "@/components/auth/auth-context";
 import { GoogleAuthButton } from "@/components/auth/google-button";
@@ -17,6 +18,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { ApiError } from "@/lib/api";
+import { cn } from "cn";
+
+/** The three password rules the assignment mandates. */
+const PASSWORD_RULES = [
+  {
+    key: "upper",
+    label: "At least one uppercase letter",
+    test: (value: string) => /[A-Z]/.test(value),
+  },
+  {
+    key: "lower",
+    label: "At least one lowercase letter",
+    test: (value: string) => /[a-z]/.test(value),
+  },
+  {
+    key: "length",
+    label: "Minimum 6 characters",
+    test: (value: string) => value.length >= 6,
+  },
+] as const;
+
+function isValidPhotoUrl(value: string): boolean {
+  try {
+    return new URL(value).protocol.startsWith("http");
+  } catch {
+    return false;
+  }
+}
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const { login, register } = useAuth();
@@ -25,6 +54,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -33,11 +63,28 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    if (isRegister) {
+      // Gate on every rule client-side — the server is the authority, but
+      // invalid passwords are never sent.
+      const failed = PASSWORD_RULES.filter((rule) => !rule.test(password));
+      if (failed.length > 0) {
+        const message = `Password needs ${failed
+          .map((rule) => rule.label.toLowerCase())
+          .join(", ")}.`;
+        setError(message);
+        return;
+      }
+    }
+
     setPending(true);
 
     try {
-      if (isRegister) await register(name, email, password);
-      else await login(email, password);
+      if (isRegister) {
+        await register(name, email, password, photoUrl.trim() || undefined);
+      } else {
+        await login(email, password);
+      }
 
       toast.success(
         mode === "register"
@@ -120,17 +167,58 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               autoComplete={
                 isRegister ? "new-password" : "current-password"
               }
-              minLength={6}
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
             {isRegister && (
-              <p className="text-xs text-muted-foreground">
-                At least 6 characters.
-              </p>
+              /* Live rule checklist — every item must pass before submit. */
+              <ul className="space-y-1 pt-1" aria-live="polite">
+                {PASSWORD_RULES.map((rule) => {
+                  const ok = rule.test(password);
+                  return (
+                    <li
+                      key={rule.key}
+                      className={cn(
+                        "flex items-center gap-1.5 text-xs",
+                        ok ? "text-emerald-600" : "text-muted-foreground",
+                      )}
+                    >
+                      {ok ? (
+                        <CheckCircle2 className="size-3 shrink-0" aria-hidden />
+                      ) : (
+                        <Circle
+                          className="size-3 shrink-0 opacity-40"
+                          aria-hidden
+                        />
+                      )}
+                      {rule.label}
+                    </li>
+                  );
+                })}
+              </ul>
             )}
           </div>
+
+          {isRegister && (
+            <div className="space-y-2">
+              <Label htmlFor="auth-photo">Photo URL</Label>
+              <Input
+                id="auth-photo"
+                type="url"
+                autoComplete="url"
+                placeholder="https://example.com/me.jpg"
+                required
+                value={photoUrl}
+                onChange={(event) => setPhotoUrl(event.target.value)}
+              />
+              {!isValidPhotoUrl(photoUrl) && photoUrl.length > 0 && (
+                <p className="text-xs text-destructive">
+                  Enter a full http(s) image URL.
+                </p>
+              )}
+            </div>
+          )}
 
           <Button type="submit" className="w-full" disabled={pending}>
             {pending && <Spinner aria-hidden />}
