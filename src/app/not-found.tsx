@@ -39,7 +39,7 @@ export default function NotFound() {
           Error 404
         </span>
 
-        <h1 className="mt-6 bg-gradient-to-b from-foreground via-foreground/70 to-foreground/10 bg-clip-text text-[clamp(6rem,20vw,12rem)] leading-none font-black tracking-tighter text-transparent select-none">
+        <h1 className="mt-6 bg-linear-to-b from-foreground via-foreground/70 to-foreground/10 bg-clip-text text-[clamp(6rem,20vw,12rem)] leading-none font-black tracking-tighter text-transparent select-none">
           404
         </h1>
 
