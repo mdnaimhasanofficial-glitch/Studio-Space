@@ -1,4 +1,10 @@
-import { CalendarClock, Search, Sparkles, type LucideIcon } from "lucide-react";
+import {
+  CalendarCheck,
+  CalendarClock,
+  Camera,
+  Search,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   Card,
@@ -10,20 +16,27 @@ import {
 const steps: { icon: LucideIcon; title: string; description: string }[] = [
   {
     icon: Search,
-    title: "Find your space",
+    title: "Discover spaces",
     description:
       "Filter by category, neighborhood, and hourly rate. Every listing is verified by us.",
   },
   {
     icon: CalendarClock,
-    title: "Book your window",
+    title: "Select shoot hours",
     description:
-      "Pick the hours you need, pay once, and get instant confirmation.",
+      "Pick your date and choose the hours you need — the running total updates as you go.",
   },
   {
-    icon: Sparkles,
-    title: "Show up and create",
-    description: "Keys in hand, gear warmed up. Hand it back when you're done.",
+    icon: CalendarCheck,
+    title: "Book instantly",
+    description:
+      "One click reserves the studio. No calls, no quotes, no waiting on a manager.",
+  },
+  {
+    icon: Camera,
+    title: "Create & produce",
+    description:
+      "Keys in hand, gear warmed up. Hand the keys back when the shoot wraps.",
   },
 ];
 
@@ -39,7 +52,7 @@ export function HowItWorks() {
             How it works
           </h2>
           <p className="text-muted-foreground">
-            Three steps between you and a room that is ready for you.
+            Four steps between you and a room that is ready for you.
           </p>
         </div>
 
