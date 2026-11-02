@@ -1,11 +1,9 @@
 import Link from "next/link";
-import type { FormEvent, SVGProps } from "react";
-import { toast } from "sonner";
+import type { SVGProps } from "react";
 import { Aperture } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { studioCategories } from "@/lib/studios";
+import { NewsletterSignup } from "@/components/layout/newsletter-signup";
 
 // Evaluated once at build time — `new Date()` during render is unstable under
 // cacheComponents prerendering.
@@ -18,7 +16,7 @@ const footerLinks = [
   { href: "/account/studios", label: "List a Studio" },
 ] as const;
 
-const quickCategories: { href: string; label: string }[] = [
+const quickCategories = [
   { href: "/studios?category=Photo", label: "Photo Studios" },
   { href: "/studios?category=Sound Stage", label: "Film Stages" },
   { href: "/studios?category=Podcast", label: "Podcast Lounges" },
@@ -59,27 +57,6 @@ function FacebookLogo(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function CategoryLinks() {
-  return (
-    <div className="space-y-3">
-      <p className="text-sm font-semibold text-foreground">
-        Popular Categories
-      </p>
-      <nav aria-label="Studio categories" className="flex flex-col gap-2.5">
-        {quickCategories.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
-    </div>
-  );
-}
-
 const socials = [
   { href: "https://x.com", label: "StudioSpace on X", Icon: XLogo },
   { href: "https://instagram.com", label: "StudioSpace on Instagram", Icon: InstagramLogo },
@@ -88,18 +65,6 @@ const socials = [
 ];
 
 export function SiteFooter() {
-  function handleSubscribe(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const input = form.elements.namedItem("newsletter-email");
-    if (!(input instanceof HTMLInputElement)) return;
-
-    toast.success(
-      `Subscribed — studio updates will land in ${input.value}. Thanks for joining!`,
-    );
-    form.reset();
-  }
-
   return (
     <footer className="border-t border-border/60">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -143,29 +108,31 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <CategoryLinks />
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-foreground">
+            Popular Categories
+          </p>
+          <nav aria-label="Studio categories" className="flex flex-col gap-2.5">
+            {quickCategories.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
         <div className="space-y-3">
-          <p className="text-sm font-semibold text-foreground">Stay in the loop</p>
+          <p className="text-sm font-semibold text-foreground">
+            Stay in the loop
+          </p>
           <p className="text-sm text-muted-foreground">
             New spaces and shooting-season deals, once a month.
           </p>
-          <form onSubmit={handleSubscribe} className="flex gap-2">
-            <label htmlFor="footer-newsletter" className="sr-only">
-              Email address
-            </label>
-            <Input
-              id="footer-newsletter"
-              name="newsletter-email"
-              type="email"
-              placeholder="you@example.com"
-              required
-              className="max-w-48 flex-1"
-            />
-            <Button type="submit" variant="outline" size="sm">
-              Subscribe
-            </Button>
-          </form>
+          <NewsletterSignup />
         </div>
       </div>
 
