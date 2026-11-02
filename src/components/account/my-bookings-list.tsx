@@ -79,16 +79,20 @@ export function MyBookingsList() {
           current?.map((item) => (item.id === updated.id ? updated : item)) ??
           null,
       );
+      toast.success("Booking cancelled", {
+        description: `${booking.studioName} on ${booking.date} is now cancelled.`,
+      });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setToken(null);
         return;
       }
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : "Could not cancel the booking. Please try again.",
-      );
+          : "Could not cancel the booking. Please try again.";
+      toast.error(message, { description: "Cancellation failed." });
+      setError(message);
     } finally {
       setPendingId(null);
     }

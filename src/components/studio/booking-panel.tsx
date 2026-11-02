@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { CalendarDays, Check, Clock } from "lucide-react";
 
@@ -88,17 +89,23 @@ export function BookingPanel({ studio }: { studio: BookingPanelStudio }) {
         token,
       );
       setConfirmation({ date: booking.date, total: booking.totalPrice });
+      toast.success("Booking created", {
+        description: `${studio.name} is booked for ${booking.date} — $${booking.totalPrice} total.`,
+      });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         logout();
         router.replace(`/login?next=${next}`);
         return;
       }
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : "Something went wrong. Please try again.",
-      );
+          : "Something went wrong. Please try again.";
+      toast.error(message, {
+        description: date ? `Could not book ${date}.` : "Could not book.",
+      });
+      setError(message);
     } finally {
       setPending(false);
     }

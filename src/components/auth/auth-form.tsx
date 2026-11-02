@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import {
+  useState,
+  type FormEvent,
+} from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { useAuth } from "@/components/auth/auth-context";
 import { GoogleAuthButton } from "@/components/auth/google-button";
@@ -35,17 +39,26 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       if (isRegister) await register(name, email, password);
       else await login(email, password);
 
+      toast.success(
+        mode === "register"
+          ? "Account created — welcome to StudioSpace!"
+          : "You are now signed in.",
+      );
+
       // Read `next` at submit time to avoid useSearchParams + Suspense.
       const next = new URLSearchParams(window.location.search).get("next");
       const target =
         next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
       router.push(target);
     } catch (err) {
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : "Something went wrong. Please try again.",
-      );
+          : "Something went wrong. Please try again.";
+      toast.error(message, {
+        description: mode === "register" ? "Registration failed." : "Login failed.",
+      });
+      setError(message);
       setPending(false);
     }
   }

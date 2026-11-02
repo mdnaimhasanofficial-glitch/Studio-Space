@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Plus, X } from "lucide-react";
 
 import { useAuth } from "@/components/auth/auth-context";
@@ -160,10 +161,17 @@ export function AddStudioForm({ initial }: { initial?: MyStudio }) {
         // The slug is left untouched server-side, so existing links survive.
         const updated = await updateStudio(initial.id, input, token);
         setSaved(updated);
+        toast.success("Studio updated", {
+          description: `“${updated.name}” is live with the same URL.`,
+        });
       } else {
         const created = await createStudio(input, token);
         resetForm();
         setSaved(created);
+        toast.success("Studio added", {
+          description: `“${created.name}” is live at /studios/${created.slug}.`,
+        });
+        router.push("/account/studios");
       }
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
@@ -172,11 +180,14 @@ export function AddStudioForm({ initial }: { initial?: MyStudio }) {
         router.replace(`/login?next=${nextPath}`);
         return;
       }
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : "Something went wrong. Please try again.",
-      );
+          : "Something went wrong. Please try again.";
+      toast.error(message, {
+        description: isEdit ? "Update failed." : "Could not add the studio.",
+      });
+      setError(message);
     } finally {
       setPending(false);
     }

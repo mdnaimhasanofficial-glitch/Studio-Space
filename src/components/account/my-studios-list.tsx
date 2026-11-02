@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { MapPin, Pencil, Plus, Star, Trash } from "lucide-react";
 
@@ -69,16 +70,20 @@ export function MyStudiosList() {
       setStudios(
         (current) => current?.filter((item) => item.id !== studio.id) ?? null,
       );
+      toast.success("Studio deleted", {
+        description: `“${studio.name}” has been removed from StudioSpace.`,
+      });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setToken(null);
         return;
       }
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : "Could not delete the studio. Please try again.",
-      );
+          : "Could not delete the studio. Please try again.";
+      toast.error(message, { description: "Delete failed." });
+      setError(message);
     } finally {
       setPendingId(null);
     }
