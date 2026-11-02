@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/animation/reveal";
 import { About } from "@/components/home/about";
 import { CategoryBrowse } from "@/components/home/category-browse";
+import { CategoryMarquee } from "@/components/home/category-marquee";
 import { FeaturedStudios } from "@/components/home/featured-studios";
 import { Hero } from "@/components/home/hero";
 import { HowItWorks } from "@/components/home/how-it-works";
@@ -12,6 +13,7 @@ export default function Home() {
     <>
       {/* The hero is above the fold — everything below reveals on scroll. */}
       <Hero slides={getHeroSlides()} />
+      <CategoryMarquee />
       <CategoryBrowse />
       <Reveal>
         <FeaturedStudios />

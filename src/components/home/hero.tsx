@@ -13,6 +13,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { FloatingIcons } from "@/components/animation/floating-icons";
 import type { Studio } from "@/lib/studios";
 import { cn } from "cn";
 
@@ -37,6 +38,7 @@ export function Hero({ slides }: { slides: Studio[] }) {
         aria-hidden
         className="pointer-events-none absolute -top-40 right-0 size-28rem rounded-full bg-primary/10 blur-3xl"
       />
+      <FloatingIcons />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-2">
         <div className="flex flex-col items-start gap-6">
           <Badge

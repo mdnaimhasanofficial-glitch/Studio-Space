@@ -129,3 +129,46 @@
     @apply font-sans;
     }
 }
+
+/* ── Decorative motion (StudioSpace) ───────────────────────────────────── */
+
+/* Gentle bob + tilt used by the floating studio-equipment icons.
+   Duration, delay and travel come from inline custom properties. */
+@keyframes studio-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate3d(0.25rem, -0.9rem, 0) rotate(3deg);
+  }
+  66% {
+    transform: translate3d(-0.25rem, 0.4rem, 0) rotate(-2.5deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+.animate-drift {
+  animation: studio-drift var(--drift-duration, 9s) ease-in-out infinite;
+  animation-delay: var(--drift-delay, 0s);
+}
+
+/* Endless horizontal marquee — the content is rendered twice and shifted
+   by exactly half its width for a seamless loop. */
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll var(--marquee-duration, 30s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift,
+  .animate-marquee {
+    animation: none;
+  }
+}

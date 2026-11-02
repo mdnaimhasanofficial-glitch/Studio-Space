@@ -15,9 +15,9 @@ export default function NotFound() {
     <div className="relative flex min-h-[78vh] items-center justify-center overflow-hidden px-6 py-24">
       {/* Ambient stage lighting */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/3 left-1/2 size-[560px] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-primary/10 blur-[120px] motion-reduce:animate-none" />
+        <div className="absolute top-1/3 left-1/2 size-140 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-primary/10 blur-[120px] motion-reduce:animate-none" />
         <div className="absolute -right-32 -bottom-40 size-96 rounded-full bg-primary/5 blur-[100px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(var(--color-foreground)_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.05] [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(var(--color-foreground)_1px,transparent_1px)] [bg-size:32px_32px] opacity-[0.05] [mask-:radial-gradient(ellipse_at_center,black_10%,transparent_70%)]" />
       </div>
 
       <div className="relative flex max-w-2xl flex-col items-center text-center">
