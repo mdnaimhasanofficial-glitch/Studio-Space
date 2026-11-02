@@ -97,6 +97,10 @@ export interface NewStudioInput {
   description: string;
   location: string;
   pricePerHour: number;
+  /** Optional refundable deposit for gear-heavy spaces. */
+  securityDeposit: number;
+  /** Largest crew/squad the room comfortably fits. */
+  maxCapacity: number;
   rating: number;
   reviews: number;
   amenities: string[];

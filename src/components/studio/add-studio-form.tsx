@@ -36,6 +36,8 @@ const emptyForm = {
   description: "",
   location: "",
   pricePerHour: "",
+  securityDeposit: "",
+  maxCapacity: "",
   rating: "0",
   reviews: "0",
   image: "",
@@ -71,6 +73,8 @@ export function AddStudioForm({ initial }: { initial?: MyStudio }) {
           description: initial.description,
           location: initial.location,
           pricePerHour: String(initial.pricePerHour),
+          securityDeposit: String(initial.securityDeposit ?? ""),
+          maxCapacity: String(initial.maxCapacity ?? ""),
           rating: String(initial.rating),
           reviews: String(initial.reviews),
           image: initial.image,
@@ -142,6 +146,8 @@ export function AddStudioForm({ initial }: { initial?: MyStudio }) {
       description: form.description.trim(),
       location: form.location.trim(),
       pricePerHour: Number(form.pricePerHour),
+      securityDeposit: Number(form.securityDeposit || 0),
+      maxCapacity: Number(form.maxCapacity || 0),
       rating: form.rating === "" ? 0 : Number(form.rating),
       reviews: form.reviews === "" ? 0 : Number(form.reviews),
       amenities,
@@ -363,6 +369,48 @@ export function AddStudioForm({ initial }: { initial?: MyStudio }) {
                   required
                   value={form.reviews}
                   onChange={(event) => setField("reviews", event.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="studio-deposit">
+                  Security Deposit{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ($, optional)
+                  </span>
+                </Label>
+                <Input
+                  id="studio-deposit"
+                  type="number"
+                  min={0}
+                  step="0.5"
+                  placeholder="100"
+                  value={form.securityDeposit}
+                  onChange={(event) =>
+                    setField("securityDeposit", event.target.value)
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="studio-capacity">
+                  Max Capacity{" "}
+                  <span className="font-normal text-muted-foreground">
+                    (people, optional)
+                  </span>
+                </Label>
+                <Input
+                  id="studio-capacity"
+                  type="number"
+                  min={0}
+                  step={1}
+                  placeholder="12"
+                  value={form.maxCapacity}
+                  onChange={(event) =>
+                    setField("maxCapacity", event.target.value)
+                  }
                 />
               </div>
             </div>
