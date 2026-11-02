@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Open_Sans } from "next/font/google";
 
 import { AuthProvider } from "@/components/auth/auth-context";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SiteHeaderFallback } from "@/components/layout/site-header-fallback";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
@@ -35,7 +37,9 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <AuthProvider>
-            <SiteHeader />
+            <Suspense fallback={<SiteHeaderFallback />}>
+              <SiteHeader />
+            </Suspense>
             <main className="flex-1">{children}</main>
             <SiteFooter />
           </AuthProvider>
