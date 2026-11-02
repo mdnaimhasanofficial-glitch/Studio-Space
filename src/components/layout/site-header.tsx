@@ -15,7 +15,11 @@ import {
 
 import { useAuth } from "@/components/auth/auth-context";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { buttonVariants, Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -128,6 +132,12 @@ export function SiteHeader() {
                 }
               >
                 <Avatar size="sm">
+                  {user.photo ? (
+                    <AvatarImage
+                      src={user.photo}
+                      alt={`${user.name}'s avatar`}
+                    />
+                  ) : null}
                   <AvatarFallback>
                     {initialsOf(user.name, user.email)}
                   </AvatarFallback>
