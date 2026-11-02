@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import {
   Aperture,
   Building,
@@ -60,6 +61,81 @@ function isActiveRoute(pathname: string, href: string): boolean {
   return pathname.startsWith(href);
 }
 
+/**
+ * Active-route indicator for one nav item. `usePathname` only exists in this
+ * leaf — per URL-data-in-Suspense rules of cacheComponents, URL hooks live in
+ * the smallest component and the fallback (plain link, no active styling)
+ * ships in the static shell.
+ */
+function NavItem({
+  href,
+  label,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  onNavigate?: () => void;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <Link
+          href={href}
+          onClick={onNavigate}
+          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {label}
+        </Link>
+      }
+    >
+      <ActiveNavItem href={href} label={label} onNavigate={onNavigate} />
+    </Suspense>
+  );
+}
+
+function ActiveNavItem({
+  href,
+  label,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  onNavigate?: () => void;
+}) {
+  const pathname = usePathname();
+  const active = isActiveRoute(pathname, href);
+
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "text-sm text-muted-foreground transition-colors hover:text-foreground",
+        active &&
+          "font-medium text-primary underline decoration-2 underline-offset-8",
+      )}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <>
+      {navItems.map((item) => (
+        <NavItem
+          key={item.href}
+          href={item.href}
+          label={item.label}
+          onNavigate={onNavigate}
+        />
+      ))}
+    </>
+  );
+}
+
 function initialsOf(name: string, email: string): string {
   const source = name.trim() || email.split("@")[0];
   return source
@@ -70,35 +146,7 @@ function initialsOf(name: string, email: string): string {
     .toUpperCase();
 }
 
-function NavLinks({
-  pathname,
-  onNavigate,
-}: {
-  pathname: string;
-  onNavigate?: () => void;
-}) {
-  return (
-    <>
-      {navItems.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          onClick={onNavigate}
-          className={cn(
-            "text-sm text-muted-foreground transition-colors hover:text-foreground",
-            isActiveRoute(pathname, item.href) &&
-              "font-medium text-primary underline decoration-2 underline-offset-8",
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </>
-  );
-}
-
 export function SiteHeader() {
-  const pathname = usePathname();
   const { user, logout } = useAuth();
 
   return (
@@ -115,7 +163,7 @@ export function SiteHeader() {
           aria-label="Main"
           className="hidden items-center gap-8 md:flex"
         >
-          <NavLinks pathname={pathname} />
+          <NavLinks />
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -227,7 +275,7 @@ export function SiteHeader() {
                 </SheetTitle>
               </SheetHeader>
               <nav aria-label="Mobile" className="flex flex-col gap-4 px-4">
-                <NavLinks pathname={pathname} />
+                <NavLinks />
               </nav>
               <div className="flex flex-col gap-2 px-4">
                 {user ? (
