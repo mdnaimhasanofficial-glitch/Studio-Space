@@ -14,6 +14,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { FloatingIcons } from "@/components/animation/floating-icons";
+import { HeroVideo } from "@/components/animation/hero-video";
 import type { Studio } from "@/lib/studios";
 import { cn } from "cn";
 
@@ -34,12 +35,18 @@ export function Hero({ slides }: { slides: Studio[] }) {
 
   return (
     <section className="relative overflow-hidden border-b border-border/60">
+      {/* Muted video backdrop + veils so the copy stays readable. */}
+      <div aria-hidden className="absolute inset-0">
+        <HeroVideo />
+        <div className="absolute inset-0 bg-background/45" />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/80 to-background/20" />
+      </div>
       <div
         aria-hidden
         className="pointer-events-none absolute -top-40 right-0 size-28rem rounded-full bg-primary/10 blur-3xl"
       />
       <FloatingIcons />
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-2">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-2">
         <div className="flex flex-col items-start gap-6">
           <Badge
             variant="outline"

@@ -3,6 +3,8 @@ import { Open_Sans } from "next/font/google";
 
 import { AuthProvider } from "@/components/auth/auth-context";
 import { Toaster } from "sonner";
+import { CursorTrail } from "@/components/animation/cursor-trail";
+import { GlobalVideoBackground } from "@/components/animation/global-video-background";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -34,6 +36,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
+        {/* Site-wide ambient layers (behind all content). */}
+        <GlobalVideoBackground />
+        <CursorTrail />
         <ThemeProvider>
           <AuthProvider>
             <SiteHeader />
