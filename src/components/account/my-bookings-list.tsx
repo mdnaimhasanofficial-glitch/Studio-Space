@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
-import { CalendarDays, CheckCircle2, Clock } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, Download } from "lucide-react";
 
 import { useAuth } from "@/components/auth/auth-context";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -33,6 +33,7 @@ import {
 } from "@/lib/api";
 import { setToken } from "@/lib/auth-store";
 import { cn } from "cn";
+import { downloadBookingInvoice } from "@/lib/invoice";
 
 /** Status badge tone per booking state. */
 const statusTone: Record<string, string> = {
@@ -43,7 +44,7 @@ const statusTone: Record<string, string> = {
 };
 
 export function MyBookingsList() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +111,14 @@ export function MyBookingsList() {
     } finally {
       setConfirmingId(null);
     }
+  }
+
+  function handleDownloadInvoice(booking: Booking) {
+    downloadBookingInvoice(booking, { name: user?.name, email: user?.email }).catch(
+      () => {
+        toast.error("Could not generate the invoice PDF. Please try again.");
+      },
+    );
   }
 
   async function handleCancel(booking: Booking) {
@@ -244,6 +253,18 @@ export function MyBookingsList() {
                               total
                             </span>
                           </p>
+                          {(booking.status === "confirmed" ||
+                            booking.status === "completed") && (
+                            <button
+                              type="button"
+                              onClick={() => handleDownloadInvoice(booking)}
+                              className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-foreground"
+                              aria-label={`Download invoice for ${booking.studioName}`}
+                            >
+                              <Download className="size-3.5 shrink-0" aria-hidden />
+                              Invoice
+                            </button>
+                          )}
                           {booking.status === "pending" && (
                             <button
                               type="button"

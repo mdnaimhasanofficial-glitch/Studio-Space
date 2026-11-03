@@ -1,6 +1,10 @@
-import { studioCategories, type Studio, type StudioCategory } from "@/lib/studios";
+import {
+  studioCategories,
+  type Studio,
+  type StudioCategory,
+} from "@/lib/studios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -143,11 +147,7 @@ export function deleteStudio(id: string, token: string) {
   });
 }
 
-export function updateStudio(
-  id: string,
-  input: NewStudioInput,
-  token: string,
-) {
+export function updateStudio(id: string, input: NewStudioInput, token: string) {
   return request<CreatedStudio>(`/api/studios/${id}`, {
     method: "PUT",
     body: input,
